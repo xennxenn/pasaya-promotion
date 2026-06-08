@@ -1,0 +1,6 @@
+{
+  "name": "PASAYA - Promotion QR & Artwork",
+  "description": "ระบบสร้าง Artwork และ QR Code ยืนยันสิทธิพิเศษโปรโมชั่น มหกรรมงานบ้านและสวน สำหรับลูกค้า PASAYA",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
