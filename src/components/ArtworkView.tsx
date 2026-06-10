@@ -7,7 +7,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import { 
   ArrowLeft, Calendar, User, Phone, Clock, Gift, Download, Copy, Check, 
-  Star, ShieldCheck, RefreshCw, Sparkles, Smile
+  Star, ShieldCheck, RefreshCw, Sparkles, Award
 } from "lucide-react";
 import { Customer } from "../types";
 import { PROMOTIONS } from "../data";
@@ -22,22 +22,18 @@ const formatDateToDDMMYYYY = (dateStr: string): string => {
   if (!dateStr) return "";
   let str = dateStr.trim();
 
-  // If it's a full ISO timestamp, extract the date segment
   if (str.includes("T")) {
     str = str.split("T")[0];
   }
 
-  // Split by any non-digit chars
   const parts = str.split(/[^0-9]/).filter(Boolean);
   if (parts.length >= 3) {
-    // If the first part is 4 digits, it's YYYY-MM-DD
     if (parts[0].length === 4) {
       const y = parts[0];
       const m = parts[1].padStart(2, "0");
       const d = parts[2].padStart(2, "0");
-      return `${d}-${m}-${y}`;
+      return `${d}/${m}/${y}`;
     }
-    // If the third/last part is 4 digits, it's DD-MM-YYYY
     if (parts[2].length === 4) {
       const d = parts[0].padStart(2, "0");
       const m = parts[1].padStart(2, "0");
@@ -46,7 +42,6 @@ const formatDateToDDMMYYYY = (dateStr: string): string => {
     }
   }
 
-  // Fallback: replace slashes with dashes
   return str.replace(/\//g, "-");
 };
 
@@ -61,7 +56,6 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
 
   const promoConditions = PROMOTIONS[customer.promoType] || PROMOTIONS["จองโปร"];
 
-  // Generate deep link shareable URL encode query string
   const getShareUrl = () => {
     try {
       const origin = window.location.origin + window.location.pathname;
@@ -79,9 +73,7 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
   };
 
   const shareUrl = getShareUrl();
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareUrl)}`;
 
-  // Screen layout scaling watcher
   useEffect(() => {
     const handleResize = () => {
       if (!containerRef.current) return;
@@ -110,7 +102,6 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
     };
   }, []);
 
-  // Monitor target actual size to adjust wrapper relative space
   useEffect(() => {
     if (!artworkRef.current) return;
     const observer = new ResizeObserver((entries) => {
@@ -122,14 +113,13 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
     return () => observer.disconnect();
   }, []);
 
-  // Modern capture with html-to-image avoiding OKLCH parse crash, forced to desktop layout dimension
   const captureArtworkImage = async (): Promise<string | null> => {
     if (!artworkRef.current) return null;
     try {
       const dataUrl = await toPng(artworkRef.current, {
         cacheBust: true,
-        pixelRatio: 3, // HD printing standard for crisp renders
-        backgroundColor: "#f9f6f0", // Warm organic background palette
+        pixelRatio: 3, 
+        backgroundColor: "#F5EFE4", 
         style: {
           transform: "scale(1)",
           transformOrigin: "top center",
@@ -150,7 +140,7 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
     if (dataUrl) {
       try {
         const link = document.createElement("a");
-        link.download = `PASAYA-Flyer-${customer.cleanPhone}.png`;
+        link.download = `PASAYA-Privilege-${customer.cleanPhone}.png`;
         link.href = dataUrl;
         document.body.appendChild(link);
         link.click();
@@ -158,10 +148,10 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
         setDownloadState("success");
       } catch (err) {
         console.error("Link trigger download failed", err);
-        alert("ไม่สามารถบันทึกภาพลงเครื่องโดยตรงได้ กรุณาลองแคปหน้าจอแทนครับ");
+        alert("ไม่สามารถบันทึกภาพลงเครื่องโดยตรงได้ กรุณาลองจับภาพหน้าจอ (Screenshot) เเทนครับ");
       }
     } else {
-      alert("ไม่สามารถเรนเดอร์ภาพได้ชั่วคราว กรุณาลองใหม่อีกครั้ง");
+      alert("ไม่สามารถบันทึกภาพได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง");
     }
     setTimeout(() => setDownloadState("idle"), 2200);
   };
@@ -178,7 +168,7 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
         setCopyState("success");
       } catch (err) {
         console.error("Clipboard blocked:", err);
-        alert("เบราว์เซอร์นี้ไม่สนับสนุนการเซฟรูปลงคลิปบอร์ดตรงตัว กรุณาบันทึกภาพด้วยปุ่ม 'บันทึกรูปภาพ (Save Image)' เเทนครับ");
+        alert("เบราว์เซอร์นี้ไม่สนับสนุนการเซฟรูปลงคลิปบอร์ดตรงตัว กรุณาบันทึกภาพด้วยปุ่ม 'บันทึกรูปเอกสารสิทธิ์' เเทนครับ");
         setCopyState("idle");
       }
     } else {
@@ -187,33 +177,31 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
     setTimeout(() => setCopyState("idle"), 3000);
   };
 
-  // Google Drive Verified PASAYA Logo image replacement
   const pasayaLogoSvg = (
     <div className="flex flex-col items-center justify-center pt-2 select-none">
       <img
         src="https://lh3.googleusercontent.com/d/1xT2ysUSWkTcFxs1ztoGxZuQcnO_c66Tu"
         alt="PASAYA Logo"
-        className="h-32 sm:h-40 object-contain mx-auto"
+        className="h-28 sm:h-32 object-contain mx-auto"
         referrerPolicy="no-referrer"
       />
     </div>
   );
 
-  // Separates bracketized contents into its own line and styles them with font-normal to make sure it's not bold
   const renderFormattedText = (text: string, isHighlighted: boolean) => {
     const parenRegex = /\(([^)]+)\)/;
     const match = text.match(parenRegex);
     
     if (match) {
-      const parenContent = match[0]; // Includes brackets e.g. "(ยกเว้นรุ่น Ultra Violet และ Ballet)"
+      const parenContent = match[0]; 
       const partBefore = text.replace(parenContent, "").trim();
 
       return (
         <div className="flex flex-col items-start w-full gap-0.5">
-          <span className={`${isHighlighted ? "text-gray-900 font-extrabold" : "font-extrabold text-[#2c201c]"} text-xs sm:text-[13px] leading-relaxed block w-full`}>
+          <span className={`${isHighlighted ? "text-brand-crimson font-medium" : "font-medium text-brand-charcoal"} text-xs sm:text-[13px] leading-relaxed block w-full`}>
             {partBefore}
           </span>
-          <span className="text-[10.5px] sm:text-[11px] font-medium text-gray-400 block pl-0.5 select-all leading-normal w-full">
+          <span className="text-[10.5px] sm:text-[11px] font-light text-neutral-400 block select-all leading-normal w-full">
             {parenContent}
           </span>
         </div>
@@ -221,27 +209,27 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
     }
     
     return (
-      <span className={`${isHighlighted ? "text-gray-900 font-extrabold" : "font-extrabold text-[#2c201c]"} text-xs sm:text-[13px] leading-relaxed block w-full`}>
+      <span className={`${isHighlighted ? "text-brand-crimson font-semibold" : "font-medium text-brand-charcoal"} text-xs sm:text-[13px] leading-relaxed block w-full`}>
         {text}
       </span>
     );
   };
 
   return (
-    <div className="bg-[#f2ebe1] min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center justify-start relative font-sans">
+    <div className="bg-gradient-to-tr from-brand-charcoal via-[#231A18] to-brand-charcoal min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center justify-start relative font-sans">
       
-      {/* Decorative indie background elements */}
-      <div className="absolute top-20 left-10 w-40 h-40 bg-orange-200/40 rounded-full filter blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#ebd9c8]/50 rounded-full filter blur-3xl pointer-events-none"></div>
+      {/* Decorative luxury radial glows */}
+      <div className="absolute top-20 left-10 w-64 h-64 bg-brand-gold/10 rounded-full filter blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-20 right-10 w-80 h-80 bg-brand-crimson/5 rounded-full filter blur-[130px] pointer-events-none"></div>
 
       {showBackButton && (
         <div className="w-full max-w-[610px] mb-6 self-center flex">
           <button
             onClick={onBack}
-            className="bg-white text-[#4a0e10] px-4 py-2.5 rounded-xl shadow-sm border-2 border-[#4a0e10] hover:bg-neutral-50 active:scale-[0.98] transition font-bold flex items-center text-xs sm:text-sm cursor-pointer"
+            className="bg-transparent text-brand-gold/90 px-4 py-2.5 rounded-xl border border-brand-gold/30 hover:border-brand-gold/80 hover:bg-white/5 active:scale-[0.98] transition-all font-medium flex items-center text-xs sm:text-sm cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            กลับหน้าพนักงาน
+            <ArrowLeft className="w-4 h-4 mr-2 text-brand-gold" />
+            กลับหน้าแผงควบคุมระบบ
           </button>
         </div>
       )}
@@ -261,132 +249,146 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
             transform: `scale(${scale})`, 
             transformOrigin: "top center",
           }}
-          className="pt-10 pb-5 px-5 bg-[#f9f6f0] rounded-[2.5rem] relative flex-shrink-0"
+          className="pt-10 pb-6 px-6 bg-brand-light-gold relative flex-shrink-0"
         >
-        
-        {/* Mock Washi tape sticker over the flyer */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[#eee3d1] border-l-4 border-r-4 border-dashed border-[#bda88e] text-[#6d5638] text-[9px] font-extrabold px-8 py-1.5 rotate-[-1deg] shadow-sm uppercase tracking-widest z-20">
-          📍 Verified Booking Handbill
-        </div>
 
-        {/* Outer Solid Border Box reminiscent of physical print layout with raw offset shadow */}
-        <div className="bg-[#fffefe] rounded-3xl p-5 sm:p-7 border-3 border-[#2c201c] shadow-[6px_6px_0px_#4a0e10]">
+        {/* Elegant Gold/Crimson Luxury Border Box */}
+        <div className="bg-white rounded-2xl p-8 sm:p-10 border border-brand-gold/30 shadow-[0_24px_60px_rgba(31,25,23,0.15)] relative overflow-hidden">
           
-          {/* Header - Editorial Style, NOT AI Style */}
-          <div className="text-center pt-5 pb-6 border-b-2 border-dashed border-[#2c201c] relative">
-            <div className="inline-block mx-auto mb-3">
+          {/* Executive Corner Watermarks */}
+          <div className="absolute top-5 left-5 w-8 h-8 border-t border-l border-brand-gold/50"></div>
+          <div className="absolute top-5 right-5 w-8 h-8 border-t border-r border-brand-gold/50"></div>
+          <div className="absolute bottom-5 left-5 w-8 h-8 border-b border-l border-brand-gold/50"></div>
+          <div className="absolute bottom-5 right-5 w-8 h-8 border-b border-r border-brand-gold/50"></div>
+          
+          {/* Certificate Header - Modern Luxury Layout */}
+          <div className="text-center pt-2 pb-6 border-b border-neutral-100 relative">
+            <div className="inline-block mx-auto mb-1">
               {pasayaLogoSvg}
             </div>
             
-            <h1 className="text-xl sm:text-2xl font-black text-[#2c201c] tracking-tight leading-tight mt-2">
-              โปรโมชั่นงานบ้านและสวน
+            <p className="font-serif italic text-brand-dark-gold text-[11px] sm:text-xs tracking-[0.25em] uppercase font-medium">
+              Exclusive Privilege Partnership
+            </p>
+            
+            <h1 className="text-[17px] sm:text-[21px] font-semibold text-brand-charcoal tracking-wide mt-2 font-serif uppercase">
+              หนังสือยืนยันเอกสิทธิ์เฉพาะบุคคล
             </h1>
-            <p className="text-[#a51c24] text-xs sm:text-sm font-extrabold tracking-wide mt-1">
-              มหกรรมบ้านและสวน Shopping Week
+            
+            <p className="text-xs text-neutral-400 font-light mt-0.5">
+              Promotion Privilege Portfolio Specification
             </p>
 
-            <div className="inline-flex items-center gap-1.5 bg-[#fcf8f2] border-2 border-[#2c201c] rounded-xl px-3.5 py-1 mt-3.5 text-[10px] sm:text-xs font-bold text-[#4a0e10] shadow-[2px_2px_0px_#2c201c]">
-              <Calendar className="w-3.5 h-3.5 text-[#a51c24]" />
-              20 - 28 มิ.ย. 2569 @อิมแพ็ค เมืองทองธานี
+            <div className="inline-flex items-center gap-2 bg-brand-light-gold/80 border border-brand-gold/20 rounded-full px-4 py-1.5 mt-4 text-[10px] sm:text-xs font-medium text-brand-dark-gold">
+              <Calendar className="w-3.5 h-3.5 text-brand-crimson" />
+              <span>มหกรรมบ้านและสวน Shopping Week ณ อิมแพ็ค เมืองทองธานี</span>
             </div>
           </div>
 
-          {/* Ticket Information Section */}
-          <div className="py-6 space-y-5">
+          {/* Core Documents Ledger */}
+          <div className="py-6 space-y-6">
             
-            {/* Soft-styled Post-it Note visual representing customer confirmation details */}
-            <div className="bg-[#fcfaf4] border-2 border-[#2c201c]/70 rounded-2xl p-4 shadow-[3px_3px_0px_rgba(44,32,28,0.1)] relative">
-              <div className="absolute top-2 right-3 opacity-10">
-                <Smile className="w-12 h-12 text-[#4a0e10]" />
+            {/* Elegant Prestige Ledger Table */}
+            <div className="border border-neutral-100 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-brand-light-gold/50 border-b border-neutral-100 px-4 py-2 flex justify-between items-center">
+                <span className="text-[9px] font-semibold text-brand-dark-gold tracking-widest uppercase">Registered specifications</span>
+                <span className="text-[8px] sm:text-[9px] text-neutral-400 font-mono tracking-wider">REF. PASAYA-2026-REG</span>
               </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-bold text-[#766352] bg-[#fbf5ee] border border-[#e8dccb] px-2.5 py-0.5 rounded-md uppercase tracking-wider">
-                    Customer Info
-                  </span>
-                  <span className="text-[9px] font-bold text-[#a09080] tracking-wider uppercase">PASAYA CLIENT REGISTER</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 pt-1">
-                  <div className="min-w-0">
-                    <span className="text-[9px] text-[#2c201c]/50 font-black uppercase tracking-wider block">ผู้มีสิทธิ์ใช้งาน</span>
-                    <span className="text-sm sm:text-base font-black text-[#2c201c] block mt-0.5 whitespace-nowrap">{customer.name}</span>
+              <div className="divide-y divide-neutral-100 p-4 bg-white/70">
+                <div className="grid grid-cols-2 gap-4 py-1">
+                  <div>
+                    <span className="text-[8px] text-neutral-400 font-medium uppercase tracking-widest block">คู่ค้าและผู้รับสิทธิพิเศษ</span>
+                    <span className="text-[13px] sm:text-sm font-semibold text-brand-charcoal block mt-0.5">{customer.name}</span>
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[9px] text-[#2c201c]/50 font-black uppercase tracking-wider block">เบอร์ติดต่อสำคัญ</span>
-                    <span className="text-sm sm:text-base font-black text-[#2c201c] block mt-0.5 font-mono whitespace-nowrap">{customer.phone}</span>
+                  <div>
+                    <span className="text-[8px] text-neutral-400 font-medium uppercase tracking-widest block">หมายเลขรับสิทธิ์ยืนยัน</span>
+                    <span className="text-[13px] sm:text-sm font-semibold text-brand-charcoal block mt-0.5 font-mono">{customer.phone}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Campaign info block layout like a supermarket receipt */}
-            <div className="bg-[#fffdfa] border-2 border-[#2c201c] rounded-2xl p-4.5">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div className="min-w-0 flex-1">
-                  <span className="inline-block bg-[#e9dad1] text-[#4a0e10] text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider whitespace-nowrap">
+            {/* Premium Privilege Status Card */}
+            <div className="bg-gradient-to-br from-brand-light-gold to-white border border-brand-gold/35 rounded-xl p-5 relative overflow-hidden backdrop-blur-sm">
+              <div className="absolute top-0 right-0 p-3 text-brand-gold/15 select-none pointer-events-none">
+                <Award className="w-20 h-20" />
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="space-y-1">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-semibold bg-brand-crimson/10 text-brand-crimson border border-brand-crimson/15 tracking-wider uppercase">
                     {customer.promoType}
                   </span>
-                  <h3 className="text-sm sm:text-base font-black text-[#2c201c] mt-2 flex items-center whitespace-nowrap">
-                    <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500 mr-1.5 flex-shrink-0" />
-                    โควตาสิทธิพิเศษของท่าน
+                  
+                  <h3 className="text-[14px] sm:text-[15px] font-serif font-semibold text-brand-charcoal mt-1 flex items-start">
+                    <Sparkles className="w-4 h-4 text-brand-gold fill-brand-gold mr-1.5 mt-0.5 flex-shrink-0" />
+                    <span>
+                      เอกสิทธิ์การรับโปรโมชั่น<br />ผ้าม่านสั่งตัดพิเศษ
+                    </span>
                   </h3>
-                  <p className="text-[10px] text-gray-400 font-bold mt-1.5 flex items-center whitespace-nowrap animate-none">
-                    <Clock className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
-                    บันทึกยอดมัดจำ: {formatDateToDDMMYYYY(customer.date)}
+                  
+                  <p className="text-[10.5px] text-neutral-400 font-light flex items-center">
+                    <Clock className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-brand-gold" />
+                    บันทึกหลักฐานยอดวางจอง: {formatDateToDDMMYYYY(customer.date)}
                   </p>
                 </div>
                 
-                <div className="bg-[#fffcf8] border-2 border-dashed border-[#2c201c] px-4 py-2 bg-[#fffcf8] rounded-xl text-center min-w-[140px] shadow-sm self-stretch sm:self-auto flex sm:flex-col justify-between items-center sm:justify-center flex-shrink-0">
-                  <span className="text-[9px] text-gray-400 font-black uppercase tracking-wider">ยอดเงินวางจอง</span>
-                  <span className="text-xl sm:text-2xl font-black text-[#a51c24] mt-0.5">{customer.amount} <span className="text-xs font-black text-gray-500">บาท</span></span>
+                <div className="bg-white border border-brand-gold/45 px-4 py-2.5 rounded-xl text-center shadow-sm min-w-[150px] self-stretch sm:self-auto flex sm:flex-col justify-between items-center sm:justify-center flex-shrink-0">
+                  <span className="text-[8px] text-neutral-400 font-medium tracking-widest uppercase block">วงเงินมัดจำสิทธิ์</span>
+                  <span className="text-xl sm:text-2xl font-semibold text-brand-crimson mt-0.5 font-serif">
+                    {customer.amount} <span className="text-xs font-normal text-neutral-500">THB</span>
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* NEW ADDITION: Premium Smart Motor Upgrade Option (มอเตอร์ลด 50% สำหรับลูกค้าจองโปรพร้อมมอเตอร์) */}
+            {/* Somfy Motor Upgrade section in luxury layout */}
             {customer.promoType === "จองโปรพร้อมมอเตอร์" && (
-              <div className="bg-[#fefcf8] border-2 border-dashed border-[#a51c24] rounded-2xl p-3.5 flex items-center gap-3 shadow-sm relative overflow-hidden">
-                <div className="text-xl flex-shrink-0 select-none">⚙️</div>
+              <div className="bg-gradient-to-r from-neutral-50 to-[#FCF9F5] border border-neutral-100 rounded-xl p-4 flex items-center gap-3 shadow-inner">
+                <div className="w-8 h-8 rounded-full bg-brand-gold/15 text-brand-dark-gold flex items-center justify-center text-xs font-semibold flex-shrink-0 select-none">
+                  M
+                </div>
                 <div className="flex-1 min-w-0">
-                  <span className="inline-block bg-[#a51c24] text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider mb-1">
-                    EXCLUSIVE MOTOR UPGRADE
+                  <span className="inline-block bg-brand-dark-gold/10 text-brand-dark-gold text-[7px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider mb-1">
+                    Special Somfy Upgrade Option
                   </span>
-                  <h4 className="text-xs sm:text-[13px] font-black text-[#2c201c] leading-snug">
+                  <h4 className="text-[11.5px] sm:text-[12.5px] font-bold text-brand-charcoal leading-snug">
                     พิเศษ! ส่วนลดค่ามอเตอร์ SOMFY เฉพาะรุ่น DESINGO 35/50 RTS 50%
                   </h4>
-                  <p className="text-[10px] sm:text-[10.5px] text-gray-400 mt-1 leading-normal font-medium">
-                    (ส่วนลดมอเตอร์นี้มีผลเฉพาะกรณีจองมัดจำและไม่ร่วมการคิดส่วนลดซ้อนในตาราง Ontop)
+                  <p className="text-[9.5px] text-neutral-400 mt-0.5 font-light leading-normal">
+                    (สงวนสิทธิ์สำหรับโควตาคู่ค้าจองสิทธิ์พร้อมมอเตอร์ โดยงดร่วมรายการหักส่วนลดซ้ำซ้อนในตาราง Ontop)
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Benefits Leaflet Segment */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-[#2c201c]/10">
-                <Gift className="w-4.5 h-4.5 text-[#a51c24] flex-shrink-0" />
-                <span className="text-sm font-black text-[#2c201c]">รายการสิทธิพิเศษผ้าม่านที่คุณจะได้รับ</span>
+            {/* Specific Privilege Provisions list */}
+            <div className="space-y-3.5">
+              <div className="flex items-center gap-2 pb-2 border-b border-neutral-100">
+                <Gift className="w-4 h-4 text-brand-dark-gold flex-shrink-0" />
+                <span className="text-xs sm:text-[13px] font-serif font-semibold text-brand-charcoal tracking-wide uppercase">ข้อกำหนดสิทธิประโยชน์ระดับพรีเมี่ยม</span>
               </div>
 
-              {/* Perfectly-fitted Thai wrapped rows */}
-              <div className="space-y-2">
+              {/* Sophisticated Thai Rows Details */}
+              <div className="space-y-2.5">
                 {promoConditions.map((cond, idx) => {
                   const isHighlight = cond.includes("พิเศษ!") || cond.includes("ฟรี!");
                   const isSubItem = /^\d+\.\d+/.test(cond);
 
-                  const boxClass = isSubItem
-                    ? "bg-[#faf8f4] border border-[#2c201c]/30 pl-4 py-2 pr-3 ml-3 rounded-lg flex items-center gap-2 text-xs text-[#2c201c]/80"
-                    : "bg-[#fdfcf9] border-2 border-[#2c201c] p-2.5 rounded-xl flex items-center gap-2.5 text-xs font-bold text-[#2c201c]";
+                  const bulletSymbol = isSubItem ? "└─" : `${idx + 1}.`;
 
                   return (
-                    <div key={idx} className={boxClass}>
-                      {isHighlight ? (
-                        <span className="text-amber-500 font-extrabold flex-shrink-0">★</span>
-                      ) : (
-                        <span className="text-[#a51c24] font-extrabold flex-shrink-0">✔</span>
-                      )}
+                    <div 
+                      key={idx} 
+                      className={`flex gap-3 text-xs leading-relaxed ${
+                        isSubItem ? "pl-5 text-neutral-500 font-light" : "text-brand-charcoal font-medium"
+                      }`}
+                    >
+                      <span className={`font-mono text-[11px] flex-shrink-0 ${
+                        isHighlight ? "text-brand-crimson font-bold" : "text-brand-dark-gold"
+                      }`}>
+                        {bulletSymbol}
+                      </span>
                       <div className="flex-1 min-w-0">
                         {renderFormattedText(cond, isHighlight)}
                       </div>
@@ -398,77 +400,75 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
 
           </div>
 
-          {/* Flyer Perforated Tear-off Coupon Line */}
-          <div className="relative my-1 flex items-center justify-between text-[#2c201c]/50">
-            <div className="absolute -left-[30px] w-6 h-6 rounded-full bg-[#f9f6f0] border-r-3 border-[#2c201c]"></div>
-            <div className="w-full border-t-2 border-dashed border-[#2c201c]/40"></div>
-            <div className="absolute -right-[30px] w-6 h-6 rounded-full bg-[#f9f6f0] border-l-3 border-[#2c201c]"></div>
-          </div>
-
-          {/* Bottom Coupon Stub "Tear-off Part" with mandatory rules and warranty terms */}
-          <div className="pt-4 flex flex-col gap-3 text-xs">
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs pb-1">
-              <div className="flex items-center text-[#2c201c] gap-1 flex-shrink-0">
-                <span className="text-sm">💬</span>
-                <span className="font-black text-[#2c201c]/60 text-[11px] mr-1">ผู้แนะนำสิทธิ์:</span>
-                <span className="font-extrabold text-[#2c201c] bg-[#efdfcc] px-2.5 py-1 rounded-md border border-[#2c201c]/25 select-all text-xs inline-block whitespace-nowrap">
-                  {customer.salesperson || "ส้มส้ม PASAYA"}
-                </span>
-              </div>
-              <div className="text-[9.5px] text-[#2c201c]/40 font-black tracking-widest uppercase select-none">
-                PASAYA OFFICIAL
-              </div>
+          {/* Clean Thin Gold Line dividing stub spec */}
+          <div className="border-t border-neutral-100 pt-5 mt-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-[11px]">
+              <span className="text-neutral-400">ผู้จัดบันทึกรายการ:</span>
+              <span className="font-semibold text-brand-charcoal bg-[#F2EDE2]/60 px-3 py-1 rounded border border-neutral-200/50 font-sans">
+                {customer.salesperson || "ส้มส้ม PASAYA"}
+              </span>
             </div>
             
-            <div className="text-[10px] text-[#2c201c]/60 font-semibold leading-relaxed font-sans text-left w-full border-t border-[#2c201c]/10 pt-2">
-              *หมายเหตุ: เงื่อนไขและส่วนลดเป็นไปตามที่บริษัทกำหนดเฉพาะบุคคล สภาพสิทธิ์ตลอดจนสัญญารับประกันคุณภาพและการติดตั้งบริการหลังการขายยังคงสมบูรณ์ดีเยี่ยมตามมาตรฐาน PASAYA
+            {/* Signature Certificate verification label */}
+            <div className="flex items-center gap-1.5 self-end sm:self-auto">
+              <ShieldCheck className="w-3.5 h-3.5 text-brand-dark-gold" />
+              <span className="text-[10px] text-brand-dark-gold font-serif font-semibold tracking-wider uppercase">
+                PASAYA Executive Safe
+              </span>
             </div>
           </div>
 
-        </div> {/* end of outer border box */}
-      </div> {/* end of flyer scale div */}
-    </div> {/* end of containerRef wrapper */}
+          {/* Genuine certification seal footnote */}
+          <div className="text-[9.5px] font-sans font-light text-neutral-400 text-left pt-3.5 mt-2 border-t border-neutral-100/60 leading-normal">
+            * เอกสิทธิ์ใบยืนยันสิทธิ์นี้ได้รับการจองมัดจำอย่างถูกต้องภายใต้เงื่อนไข PASAYA Curtain Center สิทธิประโยชน์ไม่สามารถโอนสิทธิ์หรือแลกเปลี่ยนเป็นเงินสดได้ และมีระยะเวลาติดตั้งภายในกำหนดตามเงื่อนไขของสัญญาหลัก
+          </div>
 
-      {/* Control Actions - Download / Copy Buttons */}
-      <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3 w-full max-w-[610px] relative z-20 px-2 pb-12">
+        </div> 
+      </div> 
+    </div> 
+
+      {/* Control Actions - Luxuriously Formatted Buttons */}
+      <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 w-full max-w-[610px] relative z-20 px-2 pb-16">
         <button
           onClick={handleDownload}
           disabled={downloadState === "loading"}
-          className={`flex-1 ${
-            downloadState === "success" ? "bg-emerald-600 border-[#064e3b]" : "bg-[#4a0e10] hover:bg-[#340709] border-[#2c201c]"
-          } text-white py-3.5 px-4 rounded-2xl font-black text-sm sm:text-base border-3 flex justify-center items-center shadow-[4px_4px_0px_#2c201c] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0px_#2c201c] transition-all cursor-pointer disabled:opacity-75`}
+          className={`flex-1 flex justify-center items-center py-4 px-6 rounded-xl font-medium tracking-wide text-xs sm:text-sm min-h-[48px] uppercase transition-all shadow-md hover:shadow-lg active:scale-[0.99] cursor-pointer border disabled:opacity-75 ${
+            downloadState === "success" 
+              ? "bg-emerald-600 border-emerald-700 text-white" 
+              : "bg-brand-crimson border-brand-crimson text-white hover:bg-brand-dark-red"
+          }`}
         >
           {downloadState === "loading" ? (
-            <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
           ) : downloadState === "success" ? (
-            <Check className="w-5 h-5 mr-2" />
+            <Check className="w-4 h-4 mr-2" />
           ) : (
-            <Download className="w-5 h-5 mr-2" />
+            <Download className="w-4 h-4 mr-2" />
           )}
-          {downloadState === "loading" ? "กำลังสร้างใบปลิวรูปภาพ..." : downloadState === "success" ? "บันทึกรูปสำเร็จแล้ว!" : "บันทึกรูปภาพ (Save Image) 📸"}
+          {downloadState === "loading" ? "กำลังบันทึกเอกสาร..." : downloadState === "success" ? "บันทึกเรียบร้อย!" : "บันทึกรูปเอกสารสิทธิ์ (Save Landscape)"}
         </button>
 
         <button
           onClick={handleCopyToClipboard}
           disabled={copyState === "loading"}
-          className={`flex-1 py-3.5 px-4 rounded-2xl font-black text-sm sm:text-base flex justify-center items-center shadow-[4px_4px_0px_#2c201c] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0px_#2c201c] transition-all border-3 disabled:opacity-75 ${
+          className={`flex-1 flex justify-center items-center py-4 px-6 rounded-xl font-medium tracking-wide text-xs sm:text-sm min-h-[48px] transition-all border shadow-sm active:scale-[0.99] disabled:opacity-75 ${
             copyState === "success"
-              ? "bg-emerald-50 text-emerald-800 border-emerald-600 shadow-[4px_4px_0px_#064e3b]"
-              : "bg-white text-[#2c201c] border-[#2c201c] hover:bg-neutral-50"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-transparent text-brand-gold border-brand-gold/30 hover:border-brand-gold hover:bg-white/5"
           }`}
         >
           {copyState === "loading" ? (
-            <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
           ) : copyState === "success" ? (
-            <Check className="w-5 h-5 mr-2" />
+            <Check className="w-4 h-4 mr-2" />
           ) : (
-            <Copy className="w-5 h-5 mr-2" />
+            <Copy className="w-4 h-4 mr-2" />
           )}
           {copyState === "loading"
-            ? "กำลังบันทึก..."
+            ? "กำลังคัดลอก..."
             : copyState === "success"
-            ? "คัดลอกลงคลิปบอร์ดแล้ว!"
-            : "คัดลอกรูปส่งทาง LINE (Copy)"}
+            ? "คัดลอกรูปสำเร็จแล้ว"
+            : "คัดลอกรูปสำหรับส่ง LINE (Copy)"}
         </button>
       </div>
 

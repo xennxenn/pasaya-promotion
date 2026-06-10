@@ -1,15 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,650;0,700;1,400&family=Prompt:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Prompt", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand-crimson: #7C1014;
+  --color-brand-dark-red: #4D0A0C;
+  --color-brand-gold: #CFB085;
+  --color-brand-dark-gold: #8C6F45;
+  --color-brand-light-gold: #FAF6EE;
+  --color-brand-charcoal: #1F1917;
+  --color-brand-cream: #F5EFE4;
 }
 
 @layer utilities {
   .bg-artwork-pattern {
-    background-color: #fef2f2; /* Tailwind red-50 */
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ef4444' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-color: #FAF8F4;
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cfb085' fill-opacity='0.12'%3E%3Cpath d='M40 38V0h-2v38H0v2h38v38h2V40h38v-2H40zm0 0v1h1V40h-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 }
 

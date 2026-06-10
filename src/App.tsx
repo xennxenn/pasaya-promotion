@@ -207,7 +207,7 @@ export default function App() {
   const activeCustomer = activeCustomerPhone 
     ? combinedCustomers.find(c => c.cleanPhone === activeCustomerPhone) 
     : null;
-
+ 
   // Decide view based on routing logic
   if (activeCustomerPhone) {
     if (activeCustomer) {
@@ -222,29 +222,29 @@ export default function App() {
       // If phone input exists but customer is not yet synchronized, show beautiful lookup tool
       return (
         <div className="bg-artwork-pattern min-h-screen py-10 px-4 sm:px-6 flex flex-col items-center justify-center font-sans relative">
-          <div className="max-w-md w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-red-100 text-center text-gray-800">
-            <div className="bg-amber-100 p-4 rounded-full text-amber-700 w-16 h-16 flex items-center justify-center mx-auto mb-4 border border-amber-200">
-              <AlertTriangle className="w-8 h-8" />
+          <div className="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-brand-gold/25 text-center text-neutral-850">
+            <div className="bg-brand-light-gold p-4 rounded-full text-brand-dark-gold w-16 h-16 flex items-center justify-center mx-auto mb-5 border border-brand-gold/30">
+              <AlertTriangle className="w-8 h-8 text-brand-crimson" />
             </div>
             
-            <h2 className="text-xl font-extrabold text-red-950 mb-2">ไม่พบสิทธิ์ของหมายเลขนี้ในระบบ</h2>
+            <h2 className="text-lg font-serif font-semibold text-brand-charcoal mb-2">ไม่พบสัญญาสิทธิ์ของหมายเลขนี้ในระบบ</h2>
             
-            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-              หมายเลขโทรศัพท์สิทธิ์ <span className="font-bold text-red-800">{activeCustomerPhone}</span> ยังไม่ถูกซิงค์ข้อมูลลงในตาราง หรือไม่ได้จองผ่านฟอร์ม
+            <p className="text-xs text-neutral-500 mb-6 leading-relaxed">
+              หมายเลขสัญญายืนยัน <span className="font-semibold text-brand-crimson font-mono">{activeCustomerPhone}</span> ยังไม่ถูกซิงค์ข้อมูลลงในตาราง หรือไม่ได้จองผ่านฟอร์มส่งมอบ
             </p>
-
-            <div className="bg-amber-50 rounded-2xl p-4 text-xs text-amber-900 border border-amber-100 text-left leading-relaxed mb-6 space-y-1.5">
-              <p className="font-bold">💡 คำแนะนำสำหรับพนักงานขาย:</p>
-              <p>1. กลับไปยังช่องแผงควบคุมหลัก</p>
-              <p>2. กดสวิตช์เพิ่มสิทธิ์ลูกค้าด้วยระบบ Manual</p>
-              <p>3. กรอกชื่อและเบอร์โทรนี้ และบันทึก ข้อมูลจึงจะปรากฏ</p>
+ 
+            <div className="bg-brand-light-gold/50 rounded-xl p-4.5 text-[11px] text-brand-dark-gold border border-brand-gold/15 text-left leading-relaxed mb-6 space-y-1.5 font-light">
+              <p className="font-semibold">คู่มือปฏิบัติงานประจำสาขา:</p>
+              <p>1. กรุณากลับไปยังหน้าบริหารจัดการสิทธิ์ส่วนกลาง</p>
+              <p>2. เปิดกล่อง "ลงทะเบียนจองสิทธิ์ Manual หน้าร้าน" ด้านบน</p>
+              <p>3. กรอกบันทึกข้อมูลชื่อสะกด และหมายเลขนี้เพื่อทำรายงานออกเอกสิทธิ์</p>
             </div>
-
+ 
             <button
               onClick={handleBackToAdmin}
-              className="w-full bg-red-805 hover:bg-red-900 bg-red-800 text-white font-bold py-3 rounded-2xl transition shadow-md active:scale-95"
+              className="w-full bg-brand-crimson hover:bg-brand-dark-red text-white py-3 rounded-xl transition duration-200 text-xs font-semibold uppercase tracking-wider cursor-pointer shadow-sm shadow-brand-crimson/10"
             >
-              กลับหน้าแผงควบคุมหลัก
+              กลับสู่ระบบส่วนบริหารจัดการสิทธิ์
             </button>
           </div>
         </div>
