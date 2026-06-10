@@ -279,9 +279,14 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
               Promotion Privilege Portfolio Specification
             </p>
 
-            <div className="inline-flex items-center gap-2 bg-brand-light-gold/80 border border-brand-gold/20 rounded-full px-4 py-1.5 mt-4 text-[10px] sm:text-xs font-medium text-brand-dark-gold">
-              <Calendar className="w-3.5 h-3.5 text-brand-crimson" />
-              <span>มหกรรมบ้านและสวน Shopping Week ณ อิมแพ็ค เมืองทองธานี</span>
+            <div className="flex flex-col items-center gap-1.5 mt-4">
+              <div className="inline-flex items-center gap-2 bg-brand-light-gold/80 border border-brand-gold/20 rounded-full px-4 py-1.5 text-[10px] sm:text-xs font-medium text-brand-dark-gold">
+                <Calendar className="w-3.5 h-3.5 text-brand-crimson" />
+                <span>งานบ้านและสวนแฟร์ Shopping Week ณ อิมแพ็ค เมืองทองธานี</span>
+              </div>
+              <span className="text-[10.5px] sm:text-xs text-brand-dark-gold font-medium tracking-wide">
+                ระหว่างวันที่ 20 - 28 มิถุนายน 2026
+              </span>
             </div>
           </div>
 
@@ -371,30 +376,41 @@ export default function ArtworkView({ customer, onBack, showBackButton }: Artwor
 
               {/* Sophisticated Thai Rows Details */}
               <div className="space-y-2.5">
-                {promoConditions.map((cond, idx) => {
-                  const isHighlight = cond.includes("พิเศษ!") || cond.includes("ฟรี!");
-                  const isSubItem = /^\d+\.\d+/.test(cond);
+                {(() => {
+                  let mainItemCounter = 0;
+                  return promoConditions.map((cond, idx) => {
+                    const isHighlight = cond.includes("พิเศษ!") || cond.includes("ฟรี!");
+                    const isSubItem = /^\d+\.\d+/.test(cond);
 
-                  const bulletSymbol = isSubItem ? "└─" : `${idx + 1}.`;
+                    let bulletSymbol = "";
+                    if (isSubItem) {
+                      bulletSymbol = "└─";
+                    } else {
+                      mainItemCounter++;
+                      bulletSymbol = `${mainItemCounter}.`;
+                    }
 
-                  return (
-                    <div 
-                      key={idx} 
-                      className={`flex gap-3 text-xs leading-relaxed ${
-                        isSubItem ? "pl-5 text-neutral-500 font-light" : "text-brand-charcoal font-medium"
-                      }`}
-                    >
-                      <span className={`font-mono text-[11px] flex-shrink-0 ${
-                        isHighlight ? "text-brand-crimson font-bold" : "text-brand-dark-gold"
-                      }`}>
-                        {bulletSymbol}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        {renderFormattedText(cond, isHighlight)}
+                    const cleanCond = cond.replace(/^\d+(\.\d+)?\.?\s*/, "");
+
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`flex gap-3 text-xs leading-relaxed ${
+                          isSubItem ? "pl-5 text-neutral-500 font-light" : "text-brand-charcoal font-medium"
+                        }`}
+                      >
+                        <span className={`font-mono text-[11px] flex-shrink-0 ${
+                          isHighlight ? "text-brand-crimson font-bold" : "text-brand-dark-gold"
+                        }`}>
+                          {bulletSymbol}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          {renderFormattedText(cleanCond, isHighlight)}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  });
+                })()}
               </div>
             </div>
 
